@@ -18,6 +18,8 @@
 		00D93FF7265C23A000757B77 /* NewMessageController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00D93FF6265C23A000757B77 /* NewMessageController.swift */; };
 		00D94004265C2E9000757B77 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00D94003265C2E9000757B77 /* User.swift */; };
 		00D94013265C6A3D00757B77 /* LoginController+handlers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00D94012265C6A3D00757B77 /* LoginController+handlers.swift */; };
+		00D9402B265D02B900757B77 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00D9402A265D02B800757B77 /* Extensions.swift */; };
+		00D94039265D693A00757B77 /* ChatLogController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00D94038265D693900757B77 /* ChatLogController.swift */; };
 		635BFBD00C8F15C56B12DE5E /* Pods_ChatViaCode.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 080A9263EB07A5235DF02CEE /* Pods_ChatViaCode.framework */; };
 /* End PBXBuildFile section */
 
@@ -35,6 +37,8 @@
 		00D93FF6265C23A000757B77 /* NewMessageController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewMessageController.swift; sourceTree = "<group>"; };
 		00D94003265C2E9000757B77 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		00D94012265C6A3D00757B77 /* LoginController+handlers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LoginController+handlers.swift"; sourceTree = "<group>"; };
+		00D9402A265D02B800757B77 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		00D94038265D693900757B77 /* ChatLogController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatLogController.swift; sourceTree = "<group>"; };
 		080A9263EB07A5235DF02CEE /* Pods_ChatViaCode.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ChatViaCode.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D2DBDD908609ADA68728FFF /* Pods-ChatViaCode.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ChatViaCode.debug.xcconfig"; path = "Target Support Files/Pods-ChatViaCode/Pods-ChatViaCode.debug.xcconfig"; sourceTree = "<group>"; };
 		7594EEF02BBEB9F7890214B1 /* Pods-ChatViaCode.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ChatViaCode.release.xcconfig"; path = "Target Support Files/Pods-ChatViaCode/Pods-ChatViaCode.release.xcconfig"; sourceTree = "<group>"; };
@@ -73,6 +77,7 @@
 		00D93F9A265BCD8900757B77 /* ChatViaCode */ = {
 			isa = PBXGroup;
 			children = (
+				00D94029265D02A300757B77 /* Helpers */,
 				00D94006265C2E9500757B77 /* Model */,
 				00D93FB5265BD21800757B77 /* Controller */,
 				00D93F9B265BCD8900757B77 /* AppDelegate.swift */,
@@ -93,6 +98,7 @@
 				00D93F9F265BCD8900757B77 /* MessagesController.swift */,
 				00D93FF6265C23A000757B77 /* NewMessageController.swift */,
 				00D94012265C6A3D00757B77 /* LoginController+handlers.swift */,
+				00D94038265D693900757B77 /* ChatLogController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -103,6 +109,14 @@
 				00D94003265C2E9000757B77 /* User.swift */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		00D94029265D02A300757B77 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				00D9402A265D02B800757B77 /* Extensions.swift */,
+			);
+			path = Helpers;
 			sourceTree = "<group>";
 		};
 		4D6C7360D0146F15501F967E /* Frameworks */ = {
@@ -237,9 +251,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				00D94039265D693A00757B77 /* ChatLogController.swift in Sources */,
 				00D93FA0265BCD8900757B77 /* MessagesController.swift in Sources */,
 				00D93FF7265C23A000757B77 /* NewMessageController.swift in Sources */,
 				00D94004265C2E9000757B77 /* User.swift in Sources */,
+				00D9402B265D02B900757B77 /* Extensions.swift in Sources */,
 				00D93FB3265BD21100757B77 /* LoginController.swift in Sources */,
 				00D94013265C6A3D00757B77 /* LoginController+handlers.swift in Sources */,
 				00D93F9C265BCD8900757B77 /* AppDelegate.swift in Sources */,
