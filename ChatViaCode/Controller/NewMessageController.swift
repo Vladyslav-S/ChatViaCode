@@ -30,6 +30,7 @@ class NewMessageController: UITableViewController {
             
             if let dictionary = snapshot.value as? [String: AnyObject] {
                 let user = User(dictionary: dictionary)
+                user.id = snapshot.key
                 self.users.append(user)
                 //print(user.email, user.name )
                 
@@ -41,10 +42,6 @@ class NewMessageController: UITableViewController {
             
             }, withCancel: nil)
     }
-    
-    
-    
-    
     
     @objc func handleCancel() {
         dismiss(animated: true, completion: nil)
@@ -66,29 +63,22 @@ class NewMessageController: UITableViewController {
         if let userProfileImageUrl = user.profileImageUrl {
             
             cell.profileImageView.loadImageUsingCacheWithUrlStrind(urlString: userProfileImageUrl)
-//            // 1- create a url
-//            let url = URL(string: userProfileImageUrl)
-//            // 2- create a url session
-//            let session = URLSession(configuration: .default)
-//            // 3- give the session a task
-//            let task = session.dataTask(with: url!) { (data, responce, error) in
-//                if error != nil {
-//                print(error)
-//                return
-//                }
-//                DispatchQueue.main.async {
-//
-//                    cell.profileImageView.image = UIImage(data: data!)
-//                }
-//            }
-//            // 4- start the task
-//            task.resume()
         }
         
         return cell
     }
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 56
+        return 72
+    }
+    
+    var messagesController = MessagesController()
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        dismiss(animated: true) {
+            let user = self.users[indexPath.row]
+            self.messagesController.showChatControllerForUser(user: user)
+            print("DissmisComp")
+        }
     }
 }
  
