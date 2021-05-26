@@ -148,6 +148,8 @@ class LoginController: UIViewController {
         
         view.backgroundColor = UIColor(r: 61, g: 91, b: 151)
         
+        
+        
         view.addSubview(inputsContainerView)
         view.addSubview(loginRegisterButton)
         view.addSubview(profileImageView)

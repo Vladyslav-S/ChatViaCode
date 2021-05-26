@@ -5,7 +5,6 @@
 //  Created by MACsimus on 25.05.2021.
 //
 
-import Foundation
 import UIKit
 import Firebase
 
@@ -24,14 +23,13 @@ extension LoginController: UIImagePickerControllerDelegate, UINavigationControll
         Auth.auth().createUser(withEmail: email, password: password, completion: { (authResult, error) in
             
             if error != nil {
-                print(error)
+                print(error ?? "error in creating user")
                 return
             }
             
             guard let uid = authResult?.user.uid else {
                 return
             }
-            
             
             //successfully authenticated user
             let imageName = NSUUID().uuidString
@@ -67,7 +65,7 @@ extension LoginController: UIImagePickerControllerDelegate, UINavigationControll
         })
     }
     
-    private func registerUserIntoDatabaseWithUid(uid: String, values:[String: Any]) {
+    private func registerUserIntoDatabaseWithUid(uid: String, values:[String: AnyObject]) {
         var ref: DatabaseReference!
         ref = Database.database().reference()//(fromURL: "https://chatviacode-default-rtdb.firebaseio.com/")
         let usersReference = ref.child("users").child(uid)
@@ -87,7 +85,7 @@ extension LoginController: UIImagePickerControllerDelegate, UINavigationControll
             
             
             self.dismiss(animated: true, completion: nil)
-            print("Saved user successfully into Firebase db")
+//            print("Saved user successfully into Firebase db")
         }
     }
     
@@ -102,9 +100,8 @@ extension LoginController: UIImagePickerControllerDelegate, UINavigationControll
         present(picker, animated: true, completion: nil)
     }
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        // Local variable inserted by Swift 4.2 migrator.
         
-       // let info = convertFromUIImagePickerControllerInfoKeyDictionary(info)
+        //let info = convertFromUIImagePickerControllerInfoKeyDictionary(info)
         
         var selectedImageFromPicker: UIImage?
         

@@ -21,11 +21,50 @@ class MessagesController: UITableViewController {
         
         tableView.register(UserCell.self, forCellReuseIdentifier: cellId)
         
-        observeMessages()
+        //   observeMessages()
     }
     
     var messages = [Message]()
     var messagesDictionary = [String: Message]()
+    
+    func observeUserMessages() {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            return
+        }
+        let ref = Database.database().reference().child("user-messages").child(uid)
+        ref.observe(.childAdded, with: { (snapshot) in
+            
+            let messageId = snapshot.key
+            let messageReference = Database.database().reference().child("messages").child(messageId)
+            
+            messageReference.observeSingleEvent(of: .value, with: { (snapshot) in
+                
+                if let dictionary = snapshot.value as? [String: AnyObject] {
+                    let message = Message(dictionary: dictionary)
+                    
+                    //self.messages.append(message)
+                    
+                    if let toId = message.toId{
+                        self.messagesDictionary[toId] = message
+                        
+                        self.messages = Array(self.messagesDictionary.values)
+                        self.messages.sort { (message1, message2) -> Bool in
+                            
+                            //guard let timestamp1 = message1.timestamp, let timestamp2 = message2.timestamp else { return false }
+                            
+                            //return timestamp1.intValue > timestamp2.intValue
+                            return message1.timestamp!.intValue > message2.timestamp!.intValue
+                        }
+                    }
+                    DispatchQueue.main.async {
+                        self.tableView.reloadData()
+                    }
+                }
+                
+            }, withCancel: nil)
+            
+        }, withCancel: nil)
+    }
     
     func observeMessages() {
         let ref = Database.database().reference().child("messages")
@@ -34,17 +73,18 @@ class MessagesController: UITableViewController {
             if let dictionary = snapshot.value as? [String: AnyObject] {
                 
                 let message = Message(dictionary: dictionary)
-                self.messages.append(message)
+                //self.messages.append(message)
                 
-                if let toId = message.toId{
+                if let toId = message.toId {
                     self.messagesDictionary[toId] = message
                     
                     self.messages = Array(self.messagesDictionary.values)
                     self.messages.sort { (message1, message2) -> Bool in
                         
-                        guard let timestamp1 = message1.timestamp, let timestamp2 = message2.timestamp else { return false }
+                        //guard let timestamp1 = message1.timestamp, let timestamp2 = message2.timestamp else { return false }
                         
-                        return timestamp1.intValue > timestamp2.intValue
+                        //return timestamp1.intValue > timestamp2.intValue
+                        return message1.timestamp!.intValue > message2.timestamp!.intValue
                     }
                 }
                 DispatchQueue.main.async {
@@ -61,6 +101,7 @@ class MessagesController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: cellId, for: indexPath) as! UserCell
+        
         let message = messages[indexPath.row]
         cell.message = message
         
@@ -68,6 +109,26 @@ class MessagesController: UITableViewController {
     }
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 72
+    }
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let message = messages[indexPath.row]
+        
+        guard let chatPartnerId = message.chatPartnerId() else {
+            return
+        }
+        let ref = Database.database().reference().child("users").child(chatPartnerId)
+        ref .observeSingleEvent(of: .value, with: { (snapshot) in
+            guard let dictionary = snapshot.value as? [String: AnyObject ]else {
+                return
+            }
+            
+            let user = User(dictionary: dictionary)
+            user.id = chatPartnerId
+            self.showChatControllerForUser(user: user)
+            
+            
+        }, withCancel: nil)
+        //        showChatControllerForUser(user: <#T##User#>)
     }
     
     func fetchUserAndSetNavBarTitle() {
@@ -81,6 +142,7 @@ class MessagesController: UITableViewController {
                 
                 let user = User(dictionary: dictionary)
                 self.setupNavBarWithUser(user: user)
+                //self.showChatControllerForUser(user: user)
             }
             
         }, withCancel: nil)
@@ -88,64 +150,72 @@ class MessagesController: UITableViewController {
     }
     
     func setupNavBarWithUser(user: User) {
-        //        let titleView = UIView()
-        //        titleView.frame = CGRect(x: 0, y: 0, width: 100, height: 40)
-        //        titleView.backgroundColor = UIColor.red
-        //
-        //        let containerView = UIView()
-        //        containerView.translatesAutoresizingMaskIntoConstraints = false
-        //        titleView.addSubview(containerView)
-        //
-        //        let profileImageView = UIImageView()
-        //        profileImageView.translatesAutoresizingMaskIntoConstraints = false
-        //        profileImageView.contentMode = .scaleAspectFill
-        //        profileImageView.layer.cornerRadius = 20
-        //        profileImageView.clipsToBounds = true
-        //        if let profileImageUrl = user.profileImageUrl {
-        //            profileImageView.loadImageUsingCacheWithUrlStrind(urlString: profileImageUrl)
-        //        }
-        //
-        //        containerView.addSubview(profileImageView)
-        //
-        //        //ios 9 constraint anchors
-        //        //need x,y,width,height anchors
-        //        profileImageView.leftAnchor.constraint(equalTo: containerView.leftAnchor).isActive = true
-        //        profileImageView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor).isActive = true
-        //        profileImageView.widthAnchor.constraint(equalToConstant: 40).isActive = true
-        //        profileImageView.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        //
-        //        let nameLabel = UILabel()
-        //
-        //        containerView.addSubview(nameLabel)
-        //        nameLabel.text = user.name
-        //        nameLabel.translatesAutoresizingMaskIntoConstraints = false
-        //        //need x,y,width,height anchors
-        //        nameLabel.leftAnchor.constraint(equalTo: profileImageView.rightAnchor, constant: 8).isActive = true
-        //        nameLabel.centerYAnchor.constraint(equalTo: profileImageView.centerYAnchor).isActive = true
-        //        nameLabel.rightAnchor.constraint(equalTo: containerView.rightAnchor).isActive = true
-        //        nameLabel.heightAnchor.constraint(equalTo: profileImageView.heightAnchor).isActive = true
-        //
-        //        containerView.centerXAnchor.constraint(equalTo: titleView.centerXAnchor).isActive = true
-        //        containerView.centerYAnchor.constraint(equalTo: titleView.centerYAnchor).isActive = true
-        //
-        //        self.navigationItem.titleView = titleView
-        //
-        //        titleView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showChatController)))
-        //        titleView.isUserInteractionEnabled = true
-        //    }
+        messages.removeAll()
+        messagesDictionary.removeAll()
+        tableView.reloadData()
         
-        let button = UIButton(type: .system)
-        button.setTitle(user.name, for: .normal)
+        observeUserMessages()
+        
+        let titleView = UIView()
+        titleView.frame = CGRect(x: 0, y: 0, width: 100, height: 40)
+//        titleView.backgroundColor = UIColor.red
+        
+        let containerView = UIView()
+        containerView.translatesAutoresizingMaskIntoConstraints = false
+        titleView.addSubview(containerView)
+        
+        let profileImageView = UIImageView()
+        profileImageView.translatesAutoresizingMaskIntoConstraints = false
+        profileImageView.contentMode = .scaleAspectFill
+        profileImageView.layer.cornerRadius = 20
+        profileImageView.clipsToBounds = true
+        if let profileImageUrl = user.profileImageUrl {
+            profileImageView.loadImageUsingCacheWithUrlStrind(urlString: profileImageUrl)
+        }
+        
+        containerView.addSubview(profileImageView)
+        
+        //ios 9 constraint anchors
+        //need x,y,width,height anchors
+        profileImageView.leftAnchor.constraint(equalTo: containerView.leftAnchor).isActive = true
+        profileImageView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor).isActive = true
+        profileImageView.widthAnchor.constraint(equalToConstant: 40).isActive = true
+        profileImageView.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        
+        let nameLabel = UILabel()
+        
+        containerView.addSubview(nameLabel)
+        nameLabel.text = user.name
+        nameLabel.translatesAutoresizingMaskIntoConstraints = false
+        //need x,y,width,height anchors
+        nameLabel.leftAnchor.constraint(equalTo: profileImageView.rightAnchor, constant: 8).isActive = true
+        nameLabel.centerYAnchor.constraint(equalTo: profileImageView.centerYAnchor).isActive = true
+        nameLabel.rightAnchor.constraint(equalTo: containerView.rightAnchor).isActive = true
+        nameLabel.heightAnchor.constraint(equalTo: profileImageView.heightAnchor).isActive = true
+        
+        containerView.centerXAnchor.constraint(equalTo: titleView.centerXAnchor).isActive = true
+        containerView.centerYAnchor.constraint(equalTo: titleView.centerYAnchor).isActive = true
+        
+        self.navigationItem.titleView = titleView
+        
+        
+        
+        
+        
+        
+        
+        //        let button = UIButton(type: .system)
+        //        button.setTitle(user.name, for: .normal)
         //button.addTarget(self, action: #selector(showChatController), for: .touchUpInside)
         
-        self.navigationItem.titleView = button
+        //self.navigationItem.titleView = button
     }
     
     @objc func handleNewMessage() {
         let newMessageController = NewMessageController()
         newMessageController.messagesController = self
         let navController = UINavigationController(rootViewController: newMessageController)
-        //        navController.modalPresentationStyle = .fullScreen
+//        navController.modalPresentationStyle = .fullScreen
         present(navController, animated: true, completion: nil)
     }
     
@@ -181,6 +251,7 @@ class MessagesController: UITableViewController {
         let chatLogController = ChatLogController(collectionViewLayout: UICollectionViewFlowLayout())
         
         chatLogController.user = user
+        //chatLogController.modalPresentationStyle = .fullScreen
         navigationController?.pushViewController(chatLogController, animated: true)
     }
     
@@ -194,6 +265,8 @@ class MessagesController: UITableViewController {
         
         let loginController = LoginController()
         loginController.messagesController = self
+        
+        loginController.modalPresentationStyle = .fullScreen
         present(loginController, animated: true, completion: nil)
     }
     

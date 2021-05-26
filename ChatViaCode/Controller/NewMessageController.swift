@@ -32,9 +32,7 @@ class NewMessageController: UITableViewController {
                 let user = User(dictionary: dictionary)
                 user.id = snapshot.key
                 self.users.append(user)
-                //print(user.email, user.name )
                 
-                //this will crash because of background thread, so lets use dispatch_async to fix
                 DispatchQueue.main.async(execute: {
                     self.tableView.reloadData()
                 })
