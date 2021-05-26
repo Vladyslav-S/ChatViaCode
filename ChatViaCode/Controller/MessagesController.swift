@@ -10,6 +10,7 @@ import Firebase
 
 class MessagesController: UITableViewController {
     
+    let cellId = "cellId"
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -17,10 +18,15 @@ class MessagesController: UITableViewController {
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(handleLogout))
         
         checkIfUserIsLoggedIn()
+        
+        tableView.register(UserCell.self, forCellReuseIdentifier: cellId)
+        
         observeMessages()
     }
     
     var messages = [Message]()
+    var messagesDictionary = [String: Message]()
+    
     func observeMessages() {
         let ref = Database.database().reference().child("messages")
         ref.observe(.childAdded, with: { (snapshot) in
@@ -30,23 +36,38 @@ class MessagesController: UITableViewController {
                 let message = Message(dictionary: dictionary)
                 self.messages.append(message)
                 
+                if let toId = message.toId{
+                    self.messagesDictionary[toId] = message
+                    
+                    self.messages = Array(self.messagesDictionary.values)
+                    self.messages.sort { (message1, message2) -> Bool in
+                        
+                        guard let timestamp1 = message1.timestamp, let timestamp2 = message2.timestamp else { return false }
+                        
+                        return timestamp1.intValue > timestamp2.intValue
+                    }
+                }
                 DispatchQueue.main.async {
                     self.tableView.reloadData()
                 }
             }
         }, withCancel: nil)
     }
+    
+    
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return messages.count
     }
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "cellId")
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellId, for: indexPath) as! UserCell
         let message = messages[indexPath.row]
-        cell.textLabel?.text = message.toId
-        cell.detailTextLabel?.text = message.text
-         
+        cell.message = message
+        
         return cell
+    }
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 72
     }
     
     func fetchUserAndSetNavBarTitle() {
@@ -124,7 +145,7 @@ class MessagesController: UITableViewController {
         let newMessageController = NewMessageController()
         newMessageController.messagesController = self
         let navController = UINavigationController(rootViewController: newMessageController)
-//        navController.modalPresentationStyle = .fullScreen
+        //        navController.modalPresentationStyle = .fullScreen
         present(navController, animated: true, completion: nil)
     }
     
