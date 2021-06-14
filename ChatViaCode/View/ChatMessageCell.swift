@@ -1,11 +1,11 @@
-////
-////  ChatMessageCell.swift
-////  ChatViaCode
-////
-////  Created by MACsimus on 27.05.2021.
-////
 //
+//  ChatMessageCell.swift
+//  ChatViaCode
 //
+//  Created by MACsimus on 27.05.2021.
+//
+
+
 import UIKit
 
 class ChatMessageCell: UICollectionViewCell {
